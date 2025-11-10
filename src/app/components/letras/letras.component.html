@@ -1,0 +1,154 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white p-4 md:p-8">
+  <div class="max-w-4xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4 md:mb-8">
+      <h1 class="text-2xl md:text-4xl font-bold">🔤 Letras</h1>
+      <button (click)="goToMenu()"
+        class="px-3 py-2 md:px-4 md:py-2 bg-gray-700 hover:bg-gray-600 active:bg-gray-500 rounded-lg transition text-sm md:text-base active:scale-95">
+        ← Menú
+      </button>
+    </div>
+
+    <!-- Setup -->
+    @if (setupMode) {
+      <div class="bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-6 md:p-8 animate-fade-in">
+        <h2 class="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">Elige el número de vocales</h2>
+
+        <div class="bg-white/5 rounded-xl p-4 md:p-6 max-w-md mx-auto">
+          <h3 class="text-lg md:text-xl font-semibold mb-4 text-center">Vocales</h3>
+          <div class="flex items-center justify-center gap-4 md:gap-6">
+            <button (click)="decrementVowels()" [disabled]="vowelsCount <= 3"
+              class="w-14 h-14 md:w-16 md:h-16 bg-blue-600 hover:bg-blue-500 active:bg-blue-400 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-xl text-3xl md:text-4xl font-bold transition active:scale-95 shadow-lg">-</button>
+            <div class="text-5xl md:text-6xl font-bold w-28 text-center">{{ vowelsCount }}</div>
+            <button (click)="incrementVowels()" [disabled]="vowelsCount >= 5"
+              class="w-14 h-14 md:w-16 md:h-16 bg-blue-600 hover:bg-blue-500 active:bg-blue-400 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-xl text-3xl md:text-4xl font-bold transition active:scale-95 shadow-lg">+</button>
+          </div>
+          <p class="text-xs md:text-sm text-gray-400 text-center mt-4">Mínimo 3, máximo 5 vocales</p>
+          <p class="text-sm md:text-base text-gray-300 text-center mt-2">Consonantes: {{ 9 - vowelsCount }}</p>
+        </div>
+
+        <button (click)="startGame()"
+          class="w-full mt-6 px-6 py-3 md:py-4 bg-green-600 hover:bg-green-500 active:bg-green-400 rounded-xl font-bold text-base md:text-lg transition active:scale-95 shadow-lg">
+          ▶ Comenzar juego
+        </button>
+      </div>
+    }
+
+    <!-- Game -->
+    @if (gameStarted && !setupMode) {
+
+      <!-- Timer -->
+      <div class="text-center mb-4 md:mb-6">
+        <div class="inline-block bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl px-6 py-3 md:px-8 md:py-4 shadow-lg">
+          <div class="text-4xl md:text-6xl font-bold" [class.text-red-400]="timeLeft <= 10" [class.animate-pulse]="timeLeft <= 10">
+            {{ timeLeft }}
+          </div>
+          <div class="text-xs md:text-sm text-gray-300 mt-1 md:mt-2">segundos</div>
+        </div>
+      </div>
+
+      <div class="bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 mb-4 md:mb-6 shadow-xl">
+
+        <!-- Campo de escritura -->
+        <div class="mb-4">
+          <input
+            #wordInput
+            type="text"
+            [(ngModel)]="userWord"
+            (keyup.enter)="endGame()"
+            autocapitalize="characters"
+            autocorrect="off"
+            autocomplete="off"
+            inputmode="text"
+            class="w-full px-6 py-4 text-2xl font-bold text-center bg-white/20 border-2 border-white/30 rounded-xl
+                   focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 uppercase transition"
+            placeholder="Escribe tu palabra..."
+          >
+          <div class="text-center text-xs text-gray-300 mt-2">
+            {{ userWord.length }} letras
+          </div>
+        </div>
+
+        <!-- Panel ÚNICO de letras -->
+        <div class="mb-4 md:mb-6">
+          <h3 class="text-base md:text-lg font-semibold mb-3 text-center">👆 Toca para escribir:</h3>
+          <div class="grid grid-cols-3 md:grid-cols-9 gap-2 md:gap-3">
+            @for (letter of letters; track $index) {
+              <button
+                (click)="addLetterByIndex($index)"
+                [disabled]="used[$index] || gameEnded"
+                class="aspect-square rounded-lg md:rounded-xl text-2xl md:text-3xl font-bold transition active:scale-95 shadow-lg touch-manipulation
+                       bg-blue-600 hover:bg-blue-500 active:bg-blue-400
+                       disabled:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                {{ letter }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="grid grid-cols-2 gap-2 md:gap-3 mb-4">
+          <button (click)="deleteLastLetter()" [disabled]="userWord.length === 0"
+            class="py-3 md:py-4 bg-red-600 hover:bg-red-500 active:bg-red-400 disabled:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg md:rounded-xl font-bold transition active:scale-95 text-sm md:text-base shadow-md">
+            ⌫ Borrar letra
+          </button>
+          <button (click)="clearWord()" [disabled]="userWord.length === 0"
+            class="py-3 md:py-4 bg-gray-600 hover:bg-gray-500 active:bg-gray-400 disabled:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg md:rounded-xl font-bold transition active:scale-95 text-sm md:text-base shadow-md">
+            🗑️ Limpiar
+          </button>
+        </div>
+
+        <button (click)="endGame()"
+          class="w-full px-6 py-3 md:py-4 bg-green-600 hover:bg-green-500 active:bg-green-400 rounded-xl font-bold text-base md:text-lg transition active:scale-95 shadow-lg">
+          ✓ Terminar
+        </button>
+      </div>
+
+      <!-- Resultados -->
+      @if (gameEnded) {
+        <div class="space-y-4 md:space-y-6 animate-fade-in">
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold mb-4 break-all">
+              {{ userWord.toUpperCase() || '(sin palabra)' }}
+            </div>
+
+            <div [class.text-green-400]="isValid" [class.text-red-400]="!isValid"
+              class="text-xl md:text-2xl font-semibold mb-2">
+              {{ isValid ? '✓ Palabra válida' : '✗ Palabra inválida' }}
+            </div>
+
+            @if (isValid) {
+              <div class="text-2xl md:text-3xl text-green-300 mb-2 font-bold">🎯 {{ points }} puntos</div>
+            }
+
+            @if (!isValid && errorMessage) {
+              <div class="text-sm md:text-base text-red-300 bg-red-900/30 rounded-lg p-3 md:p-4 mt-4">{{ errorMessage }}</div>
+            }
+
+            @if (showSolution()) {
+              <div class="bg-blue-900/40 border-2 border-blue-400 rounded-xl p-4 md:p-6 mt-6 animate-scale-in">
+                <div class="text-sm md:text-base text-blue-200 mb-2">💡 <strong>Una solución posible:</strong></div>
+                <div class="text-2xl md:text-3xl font-bold text-blue-300 uppercase break-all">{{ bestPossibleWord }}</div>
+                <div class="text-xs md:text-sm text-blue-200 mt-2">
+                  ({{ bestPossibleWord?.length }} letras - {{ bestPossibleWord?.length }} puntos)
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 md:gap-4">
+            <button (click)="playAgain()"
+              class="px-4 py-3 md:px-6 md:py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-400 rounded-xl font-bold transition active:scale-95 text-sm md:text-base shadow-md">
+              🔄 Otra vez
+            </button>
+            <button (click)="goToMenu()"
+              class="px-4 py-3 md:px-6 md:py-4 bg-gray-700 hover:bg-gray-600 active:bg-gray-500 rounded-xl font-bold transition active:scale-95 text-sm md:text-base shadow-md">
+              ← Menú
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
