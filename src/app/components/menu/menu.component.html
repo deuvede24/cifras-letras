@@ -1,0 +1,30 @@
+<div class="min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-md w-full">
+    <h1 class="text-5xl font-bold text-center mb-12 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+      🎮 CIFRAS Y LETRAS
+    </h1>
+    
+    <div class="space-y-4">
+      <button routerLink="/letras"
+              class="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 
+                     p-6 rounded-2xl text-xl font-bold transition transform hover:scale-105 
+                     shadow-lg active:scale-95">
+        📝 LETRAS
+      </button>
+      
+      <button routerLink="/cifras"
+              class="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 
+                     p-6 rounded-2xl text-xl font-bold transition transform hover:scale-105 
+                     shadow-lg active:scale-95">
+        🔢 CIFRAS
+      </button>
+    </div>
+    
+    <div class="mt-12 text-center">
+      <div class="text-gray-400 text-sm mb-2">Tu puntuación total</div>
+      <div class="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+        {{ game.score() }} pts
+      </div>
+    </div>
+  </div>
+</div>
