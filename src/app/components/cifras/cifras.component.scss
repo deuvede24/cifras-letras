@@ -1,0 +1,29 @@
+.touch-manipulation { 
+  touch-action: manipulation; 
+}
+
+.animate-bounce-in { 
+  animation: bounceIn 0.6s; 
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.1); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.relative { 
+  position: relative; 
+}
+
+/* X siempre visible en móvil, hover en PC */
+@media (max-width: 768px) {
+  .md\\:opacity-0 {
+    opacity: 1 !important;
+  }
+}
+
+.group:hover .md\\:group-hover\\:opacity-100 { 
+  opacity: 1 !important; 
+}
